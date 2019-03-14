@@ -8,20 +8,25 @@ namespace DuplicatedJsonProperties
 {
 	class DuplicatedJsonProperties
 	{
-		private const string data = @"{
+		private const string data =
+@"{
 	""language"": ""esperanto"",
 	""title"": ""Primeiro Manual de Esperanto"",
 	""title"": ""Shakespeare"",
 	""author"" : ""Ludwik Lejzer Zamenhof""
 }";
 
-
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Input:");
+			Console.WriteLine("---Input:");
 			Console.WriteLine(data);
 
+			Console.WriteLine();
+			Console.WriteLine("---Throw exception on duplicates:");
 			CodeThrowExceptionOnDuplicates(data);
+
+			Console.WriteLine();
+			Console.WriteLine("---Ignore duplicates:");
 			CodeIgnoreDuplicates(data);
 
 			Console.ReadKey();
@@ -30,6 +35,10 @@ namespace DuplicatedJsonProperties
 		private static void CodeIgnoreDuplicates(string data)
 		{
 			JObject jObject = JObject.Parse(data, new JsonLoadSettings() { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Ignore });
+
+			Console.WriteLine("Result:");
+			Console.WriteLine(jObject.ToString(Formatting.Indented));
+			Console.WriteLine();
 
 			var properties = jObject.Properties();
 
