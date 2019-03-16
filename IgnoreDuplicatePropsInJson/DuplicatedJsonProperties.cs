@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,56 +10,42 @@ namespace DuplicatedJsonProperties
 @"{
 	""language"": ""esperanto"",
 	""title"": ""Primeiro Manual de Esperanto"",
-	""title"": ""Shakespeare"",
+	""title"": ""Fundamento de Esperanto"",
 	""author"" : ""Ludwik Lejzer Zamenhof""
 }";
 
 		static void Main(string[] args)
 		{
-			Console.WriteLine("---Input:");
+			Console.WriteLine("---Input---");
 			Console.WriteLine(data);
 
-			Console.WriteLine();
-			Console.WriteLine("---Throw exception on duplicates:");
-			CodeThrowExceptionOnDuplicates(data);
-
-			Console.WriteLine();
-			Console.WriteLine("---Ignore duplicates:");
-			CodeIgnoreDuplicates(data);
+			PrintJson("Throw exception on duplicates", DuplicatePropertyNameHandling.Error);
+			PrintJson("Ignore duplicates", DuplicatePropertyNameHandling.Ignore);
+			PrintJson("Replace duplicates with the last property", DuplicatePropertyNameHandling.Replace);
 
 			Console.ReadKey();
 		}
 
-		private static void CodeIgnoreDuplicates(string data)
-		{
-			JObject jObject = JObject.Parse(data, new JsonLoadSettings() { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Ignore });
-
-			Console.WriteLine("Result:");
-			Console.WriteLine(jObject.ToString(Formatting.Indented));
-			Console.WriteLine();
-
-			var properties = jObject.Properties();
-
-			Console.WriteLine("Properties:");
-			int i = 0;
-			foreach (JProperty jProperty in properties)
-			{
-				Console.WriteLine($"{++i}. {jProperty.Name} - {jProperty.Value}");
-			}
-			Debug.Assert(properties.Count() == 3, "Unexpected number of properties.");
-		}
-
-		private static void CodeThrowExceptionOnDuplicates(string input)
+		private static void PrintJson(string header, DuplicatePropertyNameHandling duplicateFlag)
 		{
 			try
 			{
-				JToken.Parse(input, new JsonLoadSettings() { DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error });
+				Console.WriteLine();
+				Console.WriteLine("---" + header + "---");
+
+				JsonLoadSettings jsonLoadSettings = (duplicateFlag == DuplicatePropertyNameHandling.Replace)
+					? null
+					: new JsonLoadSettings { DuplicatePropertyNameHandling = duplicateFlag };
+
+				JToken jToken = JToken.Parse(data, jsonLoadSettings);
+
+				Console.WriteLine(jToken.ToString(Formatting.Indented));
+				Console.WriteLine();
 			}
 			catch (JsonReaderException jsonReaderException)
 			{
 				Console.WriteLine("Exception thrown: " + jsonReaderException.Message);
 			}
-
 		}
 	}
 }
