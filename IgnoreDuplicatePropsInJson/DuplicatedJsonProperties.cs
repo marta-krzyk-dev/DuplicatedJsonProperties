@@ -15,7 +15,6 @@ namespace DuplicatedJsonProperties
 	""author"" : ""Ludwik Lejzer Zamenhof""
 }";
 
-
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Input:");
